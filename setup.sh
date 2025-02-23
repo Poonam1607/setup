@@ -11,38 +11,46 @@ else
     echo "⚠️ Gitleaks not found. Installing..."
 
     OS_TYPE=$(uname -s)
+    INSTALL_SUCCESS=false
 
     if [[ "$OS_TYPE" == "Linux" ]]; then
-        curl -sSLo gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64.tar.gz
-        tar -xzf gitleaks.tar.gz gitleaks
-        chmod +x gitleaks
-        sudo mv gitleaks /usr/local/bin/
-        rm -f gitleaks.tar.gz
+        curl -sSLo gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64.tar.gz && \
+        tar -xzf gitleaks.tar.gz gitleaks && \
+        chmod +x gitleaks && \
+        sudo mv gitleaks /usr/local/bin/ && \
+        rm -f gitleaks.tar.gz && \
+        INSTALL_SUCCESS=true
     elif [[ "$OS_TYPE" == "Darwin" ]]; then
-        brew install gitleaks
-        export PATH="/opt/homebrew/bin:$PATH"  # Update PATH after installation
+        if brew install gitleaks; then
+            export PATH="/opt/homebrew/bin:$PATH"
+            INSTALL_SUCCESS=true
+        fi
     else
         echo "❌ Unsupported OS: $OS_TYPE"
         exit 1
     fi
 
-    echo "✅ Gitleaks installed successfully!"
+    if [[ "$INSTALL_SUCCESS" == "true" ]]; then
+        echo "✅ Gitleaks installed successfully!"
+    else
+        echo "❌ Gitleaks installation failed!"
+    fi
 fi
 
 echo "🔍 Verifying Gitleaks installation..."
 if command -v gitleaks &>/dev/null; then
     echo "✅ Gitleaks is available: $(which gitleaks)"
-else
-    echo "❌ Gitleaks installation failed! Check Homebrew or PATH settings."
-    exit 1
+    exit 0  # Exit script if Gitleaks is installed
 fi
+
+echo "⚠️ Gitleaks installation failed. Using Docker as fallback."
 
 echo "🔍 Checking for Docker installation..."
 if command -v docker &>/dev/null; then
     echo "✅ Docker is already installed: $(which docker)"
 else
     echo "⚠️ Docker not found. Installing..."
-
+    
     if [[ "$OS_TYPE" == "Linux" ]]; then
         sudo apt-get update
         sudo apt-get install -y docker.io
@@ -52,7 +60,7 @@ else
         echo "❌ Unsupported OS: $OS_TYPE"
         exit 1
     fi
-
+    
     echo "✅ Docker installed successfully!"
 fi
 
@@ -70,14 +78,6 @@ else
     echo "⚠️ Gitleaks Docker image not found. Pulling..."
     docker pull ghcr.io/gitleaks/gitleaks:latest
     echo "✅ Gitleaks Docker image pulled successfully!"
-fi
-
-echo "🚀 Running Gitleaks scan..."
-if command -v gitleaks &>/dev/null; then
-    gitleaks detect --verbose
-else
-    echo "⚠️ Local Gitleaks installation failed. Running in Docker instead..."
-    docker run --rm -v "$(pwd):/repo" ghcr.io/gitleaks/gitleaks:latest detect --source="/repo"
 fi
 
 echo "✅ Setup completed!"
