@@ -1,15 +1,17 @@
 #!/bin/bash
 
-set -e  # Exit on error
+set -e  # Exit script on any error
 
 echo "🔍 Checking for Gitleaks installation..."
+export PATH="/opt/homebrew/bin:$PATH"  # Ensure Homebrew-installed binaries are found
+
 if command -v gitleaks &>/dev/null; then
-    echo "✅ Gitleaks is already installed locally."
+    echo "✅ Gitleaks is already installed: $(which gitleaks)"
 else
     echo "⚠️ Gitleaks not found. Installing..."
 
     OS_TYPE=$(uname -s)
-    
+
     if [[ "$OS_TYPE" == "Linux" ]]; then
         curl -sSLo gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64.tar.gz
         tar -xzf gitleaks.tar.gz gitleaks
@@ -18,6 +20,7 @@ else
         rm -f gitleaks.tar.gz
     elif [[ "$OS_TYPE" == "Darwin" ]]; then
         brew install gitleaks
+        export PATH="/opt/homebrew/bin:$PATH"  # Update PATH after installation
     else
         echo "❌ Unsupported OS: $OS_TYPE"
         exit 1
@@ -26,9 +29,17 @@ else
     echo "✅ Gitleaks installed successfully!"
 fi
 
+echo "🔍 Verifying Gitleaks installation..."
+if command -v gitleaks &>/dev/null; then
+    echo "✅ Gitleaks is available: $(which gitleaks)"
+else
+    echo "❌ Gitleaks installation failed! Check Homebrew or PATH settings."
+    exit 1
+fi
+
 echo "🔍 Checking for Docker installation..."
 if command -v docker &>/dev/null; then
-    echo "✅ Docker is already installed."
+    echo "✅ Docker is already installed: $(which docker)"
 else
     echo "⚠️ Docker not found. Installing..."
 
@@ -43,6 +54,13 @@ else
     fi
 
     echo "✅ Docker installed successfully!"
+fi
+
+echo "🔍 Checking if Docker daemon is running..."
+if (! docker stats --no-stream &>/dev/null); then
+    echo "⚠️ Docker is not running. Attempting to start..."
+    open -a Docker
+    sleep 10  # Wait for Docker to start
 fi
 
 echo "🔍 Checking if Gitleaks Docker image is available..."
