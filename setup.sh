@@ -1,67 +1,28 @@
 #!/bin/bash
 
-# Function to prompt user for guide with custom messages
-show_guide_prompt() {
-  local tool_name=$1
-  local guide_function=$2
-  local decline_message=$3
+echo ""
+echo "🚀 Welcome to AnythingOps Setup!"
+echo "================================="
 
-  read -p "❓ Do you need a user guide for $tool_name? (yes/no): " response
-  case "$response" in
-    [yY][eE][sS]|[yY])
-      echo ""
-      "$guide_function"  # Call the guide function dynamically
-      ;;
-    [nN][oO]|[nN])
-      echo ""
-      echo "$decline_message"
-      echo ""
-      ;;
-    *)
-      echo "❌ Invalid response. Skipping guide."
-      ;;
-  esac
-}
+# Parse command-line arguments
+if [[ "$#" -eq 0 ]]; then
+  echo "❌ No options provided. Please specify --gitleaks, --docker, or another tool."
+  exit 1
+fi
 
-# Function to display Docker usage guide
-docker_usage_guide() {
-  echo "=================================="
-  echo "🚀 Docker Usage Guide"
-  echo "=================================="
-  echo "✅ Step 1: Open Docker Desktop"
-  echo "✅ Step 2: Navigate to Your App Repository"
-  echo "✅ Step 3: Build & Run Containers"
-  echo "🎯 Need More? Visit: https://docs.docker.com/get-started/"
-  echo "=================================="
-}
-
-# Function to display Gitleaks usage guide
-gitleaks_usage_guide() {
-  echo "=================================="
-  echo "🚀 Gitleaks Usage Guide"
-  echo "=================================="
-  echo "✅ Run a scan in your repo:   gitleaks detect -v"
-  echo "✅ Generate a report:         gitleaks detect -v --report=gitleaks_report.json"
-  echo "🎯 Need More? Visit: https://github.com/gitleaks/gitleaks"
-  echo "=================================="
-}
-
-# Function to display Nginx Scan usage guide
-nginx_scan_usage_guide() {
-  echo "=================================="
-  echo "🚀 Nginx Security Scan Guide"
-  echo "=================================="
-  echo "✅ Scan for vulnerabilities:  nginx -t"
-  echo "✅ Check Nginx config:        nginx -T"
-  echo "🎯 Need More? Visit: https://nginx.org/en/docs/"
-  echo "=================================="
-}
-
-# Function to install Docker
-install_docker() {
+# ---------------------------------
+# 🐳 Docker Installation
+# ---------------------------------
+if [[ "$1" == "--docker" ]]; then
+  echo ""
   echo "🔍 Checking for Docker installation..."
+  echo "---------------------------------"
+
   if ! command -v docker &>/dev/null; then
+    echo ""
     echo "⚠️ Docker not found. Installing..."
+    echo ""
+
     if [[ "$OSTYPE" == "darwin"* ]]; then
       echo "🍏 Detected macOS."
       brew install --cask docker
@@ -70,28 +31,71 @@ install_docker() {
       sudo apt-get update && sudo apt-get install -y docker.io
     elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
       echo "🖥️ Detected Windows OS."
-      if ! command -v choco &>/dev/null; then
-        echo "❌ Chocolatey not found. Please install Chocolatey first: https://chocolatey.org/install"
-        exit 1
-      fi
-      choco install docker-desktop -y
+      echo "🔹 Please install Docker Desktop manually: https://www.docker.com/products/docker-desktop"
+      exit 1
     else
-      echo "❌ Unsupported OS for automatic Docker installation. Install it manually."
+      echo "❌ Unsupported OS for automatic Docker installation. Install manually."
       exit 1
     fi
+
+    echo ""
     echo "✅ Docker installed successfully!"
+    echo "---------------------------------"
   else
-    echo "✅ Docker is installed: $(which docker)"
+    echo ""
+    echo "✅ Docker is already installed: $(which docker)"
+    echo "---------------------------------"
   fi
 
-  show_guide_prompt "Docker" docker_usage_guide "🐳 You skipped the guide! But remember, a ship without a captain sinks. Set sail and deploy your containers wisely!"
-}
+  # Docker User Guide Prompt
+  echo ""
+  echo "❓ Do you need a user guide for Docker? (yes/no): "
+  read -r user_choice
+  echo ""
 
-# Function to install Gitleaks
-install_gitleaks() {
+  if [[ "$user_choice" == "yes" ]]; then
+    echo "📖 Here is your Docker user guide:"
+    echo "================================="
+    echo "✅ Step 1: Open Docker Desktop"
+    echo "✅ Step 2: Navigate to Your App Repository"
+    echo "   Run: cd /path/to/your/app"
+    echo "✅ Step 3: Build a Docker Image"
+    echo "   Run: docker build -t my-app ."
+    echo "✅ Step 4: Run a Docker Container"
+    echo "   Run: docker run -d --name my-container -p 8080:8080 my-app"
+    echo "✅ Step 5: Check Running Containers"
+    echo "   Run: docker ps"
+    echo "✅ Step 6: View Container Logs"
+    echo "   Run: docker logs my-container"
+    echo "✅ Step 7: Stop & Remove a Container"
+    echo "   Run: docker stop my-container && docker rm my-container"
+    echo "✅ Step 8: Remove a Docker Image"
+    echo "   Run: docker rmi my-app"
+    echo "🎯 Need More? Visit: https://docs.docker.com/get-started/"
+    echo "================================="
+  else
+    echo "🐳 You're a Docker expert! Go ahead and containerize the world!"
+  fi
+
+  echo ""
+  echo "✅ Setup completed!"
+  echo "================================="
+  exit 0
+fi
+
+# ---------------------------------
+# 🔒 Gitleaks Installation
+# ---------------------------------
+if [[ "$1" == "--gitleaks" ]]; then
+  echo ""
   echo "🔍 Checking for Gitleaks installation..."
+  echo "---------------------------------"
+
   if ! command -v gitleaks &>/dev/null; then
+    echo ""
     echo "⚠️ Gitleaks not found. Installing..."
+    echo ""
+
     if [[ "$OSTYPE" == "darwin"* ]]; then
       echo "🍏 Detected macOS."
       brew install gitleaks
@@ -106,80 +110,48 @@ install_gitleaks() {
       fi
       choco install gitleaks -y
     else
-      echo "❌ Unsupported OS for automatic Gitleaks installation. Install it manually."
+      echo "❌ Unsupported OS for automatic Gitleaks installation. Install manually."
       exit 1
     fi
+
+    echo ""
+    echo "✅ Gitleaks installation complete!"
+    echo "---------------------------------"
+  else
+    echo ""
+    echo "✅ Gitleaks is already installed: $(which gitleaks)"
+    echo "---------------------------------"
   fi
 
-  echo "✅ Gitleaks installation complete!"
-  show_guide_prompt "Gitleaks" gitleaks_usage_guide "😏 You're a pro! Go ahead and start saving your secrets... to get exposed by attackers! (Just kidding—stay secure!)"
-}
+  # Gitleaks User Guide Prompt
+  echo ""
+  echo "❓ Do you need a user guide for Gitleaks? (yes/no): "
+  read -r user_choice
+  echo ""
 
-# Function to install Nginx Scan
-install_nginx_scan() {
-  echo "🔍 Checking for Nginx installation..."
-  if ! command -v nginx &>/dev/null; then
-    echo "⚠️ Nginx not found. Installing..."
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      echo "🍏 Detected macOS."
-      brew install nginx
-    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-      echo "🐧 Detected Linux."
-      sudo apt-get install -y nginx
-    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
-      echo "🖥️ Detected Windows OS."
-      if ! command -v choco &>/dev/null; then
-        echo "❌ Chocolatey not found. Please install Chocolatey first: https://chocolatey.org/install"
-        exit 1
-      fi
-      choco install nginx -y
-    else
-      echo "❌ Unsupported OS for automatic Nginx installation. Install it manually."
-      exit 1
-    fi
+  if [[ "$user_choice" == "yes" ]]; then
+    echo "📖 Here is your Gitleaks user guide:"
+    echo "================================="
+    echo "✅ How to Use Gitleaks CLI:"
+    echo "   - Run a scan in your repo:   gitleaks detect -v"
+    echo "   - Generate a report:         gitleaks detect -v --report=gitleaks_report.json"
+    echo "   - Check version:             gitleaks version"
+    echo "================================="
+  else
+    echo "😏 You're a pro! Go ahead and start saving your secrets... to get exposed by attackers! (Just kidding—stay secure!)"
   fi
 
-  echo "✅ Nginx installation complete!"
-  show_guide_prompt "Nginx Scan" nginx_scan_usage_guide "🚀 You skipped the guide! Hope your web server doesn’t turn into a bonfire! Stay safe and secure your Nginx."
-}
-
-# Check if no arguments are passed
-if [[ $# -eq 0 ]]; then
-  echo "❌ No arguments provided. Use --help to see available options."
-  exit 1
+  echo ""
+  echo "✅ Setup completed!"
+  echo "================================="
+  exit 0
 fi
 
-# Parse arguments
-for arg in "$@"; do
-  case $arg in
-    --docker)
-      install_docker
-      ;;
-    --gitleaks)
-      install_gitleaks
-      ;;
-    --nginx)
-      install_nginx_scan
-      ;;
-    --all)
-      install_docker
-      install_gitleaks
-      install_nginx_scan
-      ;;
-    --help)
-      echo "Usage: anythingops [OPTIONS]"
-      echo "  --docker       Install Docker"
-      echo "  --gitleaks     Install Gitleaks"
-      echo "  --nginx        Install Nginx Scan"
-      echo "  --all          Install everything"
-      echo "  --help         Show this message"
-      exit 0
-      ;;
-    *)
-      echo "❌ Invalid option: $arg"
-      exit 1
-      ;;
-  esac
-done
-
-echo "✅ Setup completed!"
+# ---------------------------------
+# 🚀 Unsupported Option
+# ---------------------------------
+echo ""
+echo "❌ Invalid option: $1"
+echo "Usage: anythingops --gitleaks | --docker"
+echo "================================="
+exit 1
