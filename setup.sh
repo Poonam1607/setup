@@ -4,10 +4,31 @@ echo ""
 echo "🚀 Welcome to AnythingOps Setup!"
 echo "================================="
 
-# Parse command-line arguments
+# Function to display help menu
+show_help() {
+  echo ""
+  echo "📖 Usage: anythingops [OPTION]"
+  echo "---------------------------------"
+  echo "Available options:"
+  echo "  --help       Show this help menu"
+  echo "  --gitleaks   Install and guide for Gitleaks (Secret Detection)"
+  echo "  --docker     Install and guide for Docker (Containerization)"
+  echo "---------------------------------"
+  echo ""
+  exit 0
+}
+
+# If no arguments are provided, show help
 if [[ "$#" -eq 0 ]]; then
-  echo "❌ No options provided. Please specify --gitleaks, --docker, or another tool."
+  echo "❌ No options provided. Use --help to see available commands."
   exit 1
+fi
+
+# ---------------------------------
+# 📖 Show Help Menu
+# ---------------------------------
+if [[ "$1" == "--help" ]]; then
+  show_help
 fi
 
 # ---------------------------------
@@ -56,22 +77,12 @@ if [[ "$1" == "--docker" ]]; then
   if [[ "$user_choice" == "yes" ]]; then
     echo "📖 Here is your Docker user guide:"
     echo "================================="
-    echo "✅ Step 1: Open Docker Desktop"
-    echo "✅ Step 2: Navigate to Your App Repository"
-    echo "   Run: cd /path/to/your/app"
-    echo "✅ Step 3: Build a Docker Image"
-    echo "   Run: docker build -t my-app ."
-    echo "✅ Step 4: Run a Docker Container"
-    echo "   Run: docker run -d --name my-container -p 8080:8080 my-app"
-    echo "✅ Step 5: Check Running Containers"
-    echo "   Run: docker ps"
-    echo "✅ Step 6: View Container Logs"
-    echo "   Run: docker logs my-container"
-    echo "✅ Step 7: Stop & Remove a Container"
-    echo "   Run: docker stop my-container && docker rm my-container"
-    echo "✅ Step 8: Remove a Docker Image"
-    echo "   Run: docker rmi my-app"
-    echo "🎯 Need More? Visit: https://docs.docker.com/get-started/"
+    echo "✅ Build an image: docker build -t my-app ."
+    echo "✅ Run a container: docker run -d --name my-container -p 8080:8080 my-app"
+    echo "✅ Stop a container: docker stop my-container"
+    echo "✅ Remove a container: docker rm my-container"
+    echo "✅ View logs: docker logs my-container"
+    echo "🎯 More info: https://docs.docker.com/get-started/"
     echo "================================="
   else
     echo "🐳 You're a Docker expert! Go ahead and containerize the world!"
@@ -105,7 +116,7 @@ if [[ "$1" == "--gitleaks" ]]; then
     elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
       echo "🖥️ Detected Windows OS."
       if ! command -v choco &>/dev/null; then
-        echo "❌ Chocolatey not found. Please install Chocolatey first: https://chocolatey.org/install"
+        echo "❌ Chocolatey not found. Install Chocolatey first: https://chocolatey.org/install"
         exit 1
       fi
       choco install gitleaks -y
@@ -132,10 +143,9 @@ if [[ "$1" == "--gitleaks" ]]; then
   if [[ "$user_choice" == "yes" ]]; then
     echo "📖 Here is your Gitleaks user guide:"
     echo "================================="
-    echo "✅ How to Use Gitleaks CLI:"
-    echo "   - Run a scan in your repo:   gitleaks detect -v"
-    echo "   - Generate a report:         gitleaks detect -v --report=gitleaks_report.json"
-    echo "   - Check version:             gitleaks version"
+    echo "✅ Scan repo: gitleaks detect -v"
+    echo "✅ Generate a report: gitleaks detect -v --report=gitleaks_report.json"
+    echo "✅ Check version: gitleaks version"
     echo "================================="
   else
     echo "😏 You're a pro! Go ahead and start saving your secrets... to get exposed by attackers! (Just kidding—stay secure!)"
@@ -152,6 +162,6 @@ fi
 # ---------------------------------
 echo ""
 echo "❌ Invalid option: $1"
-echo "Usage: anythingops --gitleaks | --docker"
+echo "Use --help to see available commands."
 echo "================================="
 exit 1
