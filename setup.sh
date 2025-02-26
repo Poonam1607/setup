@@ -20,9 +20,18 @@ echo "🔍 Checking for Gitleaks installation..."
 if ! command -v gitleaks &>/dev/null; then
   echo "⚠️ Gitleaks not found. Installing..."
   if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "🍏 Detected macOS."
     brew install gitleaks
   elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    echo "🐧 Detected Linux."
     sudo apt-get install -y gitleaks
+  elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
+    echo "🖥️ Detected Windows OS."
+    if ! command -v choco &>/dev/null; then
+      echo "❌ Chocolatey not found. Please install Chocolatey first: https://chocolatey.org/install"
+      exit 1
+    fi
+    choco install gitleaks -y
   else
     echo "❌ Unsupported OS for automatic Gitleaks installation. Install it manually."
     exit 1
