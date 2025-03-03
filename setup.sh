@@ -46,7 +46,21 @@ if [[ "$1" == "--docker" ]]; then
 
     if [[ "$OSTYPE" == "darwin"* ]]; then
       echo "🍏 Detected macOS."
-      brew install --cask docker
+      echo "⚡ Downloading Docker Desktop..."
+      curl -L -o Docker.dmg "https://desktop.docker.com/mac/main/arm64/Docker.dmg"
+
+      echo "📂 Mounting the DMG file..."
+      hdiutil attach Docker.dmg
+
+      echo "🚀 Installing Docker..."
+      sudo cp -R "/Volumes/Docker/Docker.app" /Applications
+
+      echo "⏳ Unmounting and cleaning up..."
+      hdiutil detach "/Volumes/Docker"
+      rm Docker.dmg
+
+      echo "✅ Docker installed successfully! Open it from Applications and allow permissions."
+      
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
       echo "🐧 Detected Linux."
       sudo apt-get update && sudo apt-get install -y docker.io
