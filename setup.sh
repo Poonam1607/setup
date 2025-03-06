@@ -152,8 +152,15 @@ if [[ "$1" == "--gitleaks" && "$2" == "scan-text" ]]; then
     exit 1
   fi
 
-# Run Gitleaks protect with stdin input
-echo "$INPUT_TEXT" | gitleaks protect --redact --verbose --report-format=json --report-path=gitleaks_text_report.json
+  # Create a temporary file
+  TEMP_FILE=$(mktemp)
+  echo "$INPUT_TEXT" > "$TEMP_FILE"
+
+  # Run Gitleaks detect with --no-git to avoid repository issues
+  gitleaks detect --no-git -v --source="$TEMP_FILE" --report-path=gitleaks_text_report.json --report-format=json
+
+  # Cleanup temporary file
+  rm "$TEMP_FILE"
 
   echo ""
   echo "✅ Scan completed! Report saved as 'gitleaks_text_report.json'."
