@@ -124,8 +124,7 @@ if [[ "$1" == "--gitleaks" && "$2" == "scan" ]]; then
     exit 1
   fi
 
-  # Run Gitleaks protect with stdin input
-  echo "$INPUT_TEXT" | gitleaks protect --redact --verbose --report-format=json --report-path=gitleaks_text_report.json
+  gitleaks detect -v --source="$SCAN_PATH" --report-path=gitleaks_report.json --report-format=json
 
   echo ""
   echo "✅ Scan completed! Report saved as 'gitleaks_report.json'."
@@ -153,15 +152,8 @@ if [[ "$1" == "--gitleaks" && "$2" == "scan-text" ]]; then
     exit 1
   fi
 
-  # Create a temporary file to scan the text
-  TEMP_FILE=$(mktemp)
-  echo "$INPUT_TEXT" > "$TEMP_FILE"
-
-  # Run gitleaks on the temporary file
-  gitleaks detect -v --source="$TEMP_FILE" --report-path=gitleaks_text_report.json --report-format=json
-
-  # Clean up
-  rm "$TEMP_FILE"
+# Run Gitleaks protect with stdin input
+echo "$INPUT_TEXT" | gitleaks protect --redact --verbose --report-format=json --report-path=gitleaks_text_report.json
 
   echo ""
   echo "✅ Scan completed! Report saved as 'gitleaks_text_report.json'."
