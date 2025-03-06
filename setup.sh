@@ -123,7 +123,7 @@ if [[ "$1" == "--gitleaks" && "$2" == "scan" ]]; then
   fi
 
   # Running Gitleaks scan
-  gitleaks detect -v --report=gitleaks_report.json
+  gitleaks detect -v --report-path=gitleaks_report.json --report-format=json
 
   echo "✅ Scan completed! Report saved as 'gitleaks_report.json'."
   echo "================================="
