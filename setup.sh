@@ -195,6 +195,42 @@ if [[ "$1" == "--gitleaks" ]]; then
 fi
 
 # ---------------------------------
+# 🔍 Gitleaks Scan for Input Text
+# ---------------------------------
+if [[ "$1" == "--gitleaks" && "$2" == "scan-text" ]]; then
+  INPUT_TEXT="$3"
+
+  if [[ -z "$INPUT_TEXT" ]]; then
+    echo "❌ No input text provided. Usage: anythingops --gitleaks scan-text 'your text here'"
+    exit 1
+  fi
+
+  echo ""
+  echo "🔍 Scanning provided text for secrets..."
+  echo "---------------------------------"
+
+  if ! command -v gitleaks &>/dev/null; then
+    echo "❌ Gitleaks not found. Please run: anythingops --gitleaks"
+    exit 1
+  fi
+
+  # Create a temporary file to scan the text
+  TEMP_FILE=$(mktemp)
+  echo "$INPUT_TEXT" > "$TEMP_FILE"
+
+  # Run gitleaks on the temporary file
+  gitleaks detect -v --source="$TEMP_FILE" --report-path=gitleaks_text_report.json --report-format=json
+
+  # Clean up
+  rm "$TEMP_FILE"
+
+  echo ""
+  echo "✅ Scan completed! Report saved as 'gitleaks_text_report.json'."
+  echo "================================="
+  exit 0
+fi
+
+# ---------------------------------
 # 🚀 Unsupported Option
 # ---------------------------------
 echo ""
