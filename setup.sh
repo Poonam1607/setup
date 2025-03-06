@@ -10,9 +10,10 @@ show_help() {
   echo "📖 Usage: anythingops [OPTION]"
   echo "---------------------------------"
   echo "Available options:"
-  echo "  --help       Show this help menu"
-  echo "  --gitleaks   Install and guide for Gitleaks (Secret Detection)"
-  echo "  --docker     Install and guide for Docker (Containerization)"
+  echo "  --help         Show this help menu"
+  echo "  --gitleaks     Install and guide for Gitleaks (Secret Detection)"
+  echo "  --gitleaks scan  Run Gitleaks to scan for secrets and generate a report"
+  echo "  --docker       Install and guide for Docker (Containerization)"
   echo "---------------------------------"
   echo ""
   exit 0
@@ -157,9 +158,8 @@ if [[ "$1" == "--gitleaks" ]]; then
   if [[ "$user_choice" == "yes" ]]; then
     echo "📖 Here is your Gitleaks user guide:"
     echo "================================="
-    echo "✅ Scan repo: gitleaks detect -v"
-    echo "✅ Generate a report: gitleaks detect -v --report=gitleaks_report.json"
     echo "✅ Check version: gitleaks version"
+    echo "✅ Run anythingops --gitleaks scan"
     echo "================================="
   else
     echo "😏 You're a pro! Go ahead and start saving your secrets... to get exposed by attackers! (Just kidding—stay secure!)"
@@ -170,6 +170,36 @@ if [[ "$1" == "--gitleaks" ]]; then
   echo "================================="
   exit 0
 fi
+
+# ---------------------------------
+# 🔍 Gitleaks Scan for Secrets
+# ---------------------------------
+if [[ "$1" == "--gitleaks" && "$2" == "scan" ]]; then
+  echo ""
+  echo "🔍 Running Gitleaks scan for secrets..."
+  echo "---------------------------------"
+
+  if ! command -v gitleaks &>/dev/null; then
+    echo "❌ Gitleaks is not installed. Please run: anythingops --gitleaks"
+    exit 1
+  fi
+
+  # Running Gitleaks scan
+  gitleaks detect -v --report=gitleaks_report.json
+
+  echo "✅ Scan completed! Report saved as 'gitleaks_report.json'."
+  echo "================================="
+  exit 0
+fi
+
+# ---------------------------------
+# 🚀 Unsupported Option
+# ---------------------------------
+echo ""
+echo "❌ Invalid option: $1"
+echo "Use --help to see available commands."
+echo "================================="
+exit 1
 
 # ---------------------------------
 # 🚀 Unsupported Option
