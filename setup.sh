@@ -113,18 +113,20 @@ fi
 # 🔍 Gitleaks Scan for Secrets
 # ---------------------------------
 if [[ "$1" == "--gitleaks" && "$2" == "scan" ]]; then
+  SCAN_PATH="${3:-.}"  # If a third argument is given, use it; otherwise, default to "."
+
   echo ""
-  echo "🔍 Running Gitleaks scan for secrets..."
+  echo "🔍 Running Gitleaks scan for secrets in: $SCAN_PATH"
   echo "---------------------------------"
 
   if ! command -v gitleaks &>/dev/null; then
-    echo "❌ Gitleaks is not installed. Please run: anythingops --gitleaks"
+    echo "❌ Gitleaks not found. Please run: anythingops --gitleaks"
     exit 1
   fi
 
-  # Running Gitleaks scan
-  gitleaks detect -v --report-path=gitleaks_report.json --report-format=json
+  gitleaks detect -v --source="$SCAN_PATH" --report-path=gitleaks_report.json --report-format=json
 
+  echo ""
   echo "✅ Scan completed! Report saved as 'gitleaks_report.json'."
   echo "================================="
   exit 0
