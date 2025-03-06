@@ -110,6 +110,27 @@ if [[ "$1" == "--docker" ]]; then
 fi
 
 # ---------------------------------
+# 🔍 Gitleaks Scan for Secrets
+# ---------------------------------
+if [[ "$1" == "--gitleaks" && "$2" == "scan" ]]; then
+  echo ""
+  echo "🔍 Running Gitleaks scan for secrets..."
+  echo "---------------------------------"
+
+  if ! command -v gitleaks &>/dev/null; then
+    echo "❌ Gitleaks is not installed. Please run: anythingops --gitleaks"
+    exit 1
+  fi
+
+  # Running Gitleaks scan
+  gitleaks detect -v --report=gitleaks_report.json
+
+  echo "✅ Scan completed! Report saved as 'gitleaks_report.json'."
+  echo "================================="
+  exit 0
+fi
+
+# ---------------------------------
 # 🔒 Gitleaks Installation
 # ---------------------------------
 if [[ "$1" == "--gitleaks" ]]; then
@@ -167,27 +188,6 @@ if [[ "$1" == "--gitleaks" ]]; then
 
   echo ""
   echo "✅ Setup completed!"
-  echo "================================="
-  exit 0
-fi
-
-# ---------------------------------
-# 🔍 Gitleaks Scan for Secrets
-# ---------------------------------
-if [[ "$1" == "--gitleaks" && "$2" == "scan" ]]; then
-  echo ""
-  echo "🔍 Running Gitleaks scan for secrets..."
-  echo "---------------------------------"
-
-  if ! command -v gitleaks &>/dev/null; then
-    echo "❌ Gitleaks is not installed. Please run: anythingops --gitleaks"
-    exit 1
-  fi
-
-  # Running Gitleaks scan
-  gitleaks detect -v --report=gitleaks_report.json
-
-  echo "✅ Scan completed! Report saved as 'gitleaks_report.json'."
   echo "================================="
   exit 0
 fi
