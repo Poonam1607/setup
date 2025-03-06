@@ -157,7 +157,7 @@ if [[ "$1" == "--gitleaks" && "$2" == "scan-text" ]]; then
   echo "$INPUT_TEXT" > "$TEMP_FILE"
 
   # Run Gitleaks detect with --no-git to avoid repository issues
-  gitleaks detect --no-git -v --source="$TEMP_FILE" --report-format=json > gitleaks_text_report.json
+  gitleaks detect --no-git -v --source="$TEMP_FILE" --report-path=gitleaks_txt_report.json --report-format=json
 
   # Cleanup temporary file
   rm "$TEMP_FILE"
